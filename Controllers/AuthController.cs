@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Core.DTOs.Auth;
 using Core.Interfaces;
-using Core.Models;
-
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace PaymentUtility.Controllers
 {
@@ -16,11 +17,27 @@ namespace PaymentUtility.Controllers
             _authService = authService;
         }
 
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest request)
+        // ─── REGISTER ────────────────────────────────────────────
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterDto request)
         {
             if (!ModelState.IsValid)
-                return BadRequest(new AuthResponse { Success = false, Message = "Invalid request" });
+                return BadRequest(new AuthResponseDto { Success = false, Message = "Invalid request" });
+
+            var result = await _authService.RegisterAsync(request);
+
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+
+        // ─── LOGIN ────────────────────────────────────────────────
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new AuthResponseDto { Success = false, Message = "Invalid request" });
 
             var result = await _authService.LoginAsync(request);
 
@@ -30,13 +47,66 @@ namespace PaymentUtility.Controllers
             return Ok(result);
         }
 
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+        // ─── LOGOUT ──────────────────────────────────────────────
+        [HttpPost("logout")]
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            if (string.IsNullOrEmpty(token))
+                return BadRequest(new AuthResponseDto { Success = false, Message = "Token is required" });
+
+            var result = await _authService.LogoutAsync(token);
+
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+
+        // ─── FORGOT PASSWORD ─────────────────────────────────────
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto request)
         {
             if (!ModelState.IsValid)
-                return BadRequest(new AuthResponse { Success = false, Message = "Invalid request" });
+                return BadRequest(new AuthResponseDto { Success = false, Message = "Invalid request" });
 
-            var result = await _authService.RegisterAsync(request);
+            var result = await _authService.ForgotPasswordAsync(request);
+
+            return Ok(result);
+        }
+
+        // ─── RESET PASSWORD ──────────────────────────────────────
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new AuthResponseDto { Success = false, Message = "Invalid request" });
+
+            var result = await _authService.ResetPasswordAsync(request);
+
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+
+        // ─── CHANGE PASSWORD ─────────────────────────────────────
+        [HttpPost("change-password")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new AuthResponseDto { Success = false, Message = "Invalid request" });
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim))
+                return Unauthorized(new AuthResponseDto { Success = false, Message = "Unauthorized" });
+
+            var userId = int.Parse(userIdClaim);
+            var result = await _authService.ChangePasswordAsync(userId, request);
 
             if (!result.Success)
                 return BadRequest(result);
