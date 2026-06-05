@@ -19,7 +19,6 @@ namespace Logic.Services
             _jwtService = jwtService;
         }
 
-        // ─── LOGIN ───────────────────────────────────────────────
         public async Task<AuthResponseDto> LoginAsync(LoginDto request)
         {
             var user = await _context.Users
@@ -44,7 +43,6 @@ namespace Logic.Services
             };
         }
 
-        // ─── REGISTER ────────────────────────────────────────────
         public async Task<AuthResponseDto> RegisterAsync(RegisterDto request)
         {
             if (request.Password != request.ConfirmPassword)
@@ -71,7 +69,6 @@ namespace Logic.Services
             return new AuthResponseDto { Success = true, Message = "Account created successfully" };
         }
 
-        // ─── LOGOUT ──────────────────────────────────────────────
         public async Task<AuthResponseDto> LogoutAsync(string token)
         {
             var exists = await _context.TokenBlacklist
@@ -92,24 +89,20 @@ namespace Logic.Services
             return new AuthResponseDto { Success = true, Message = "Logged out successfully" };
         }
 
-        // ─── FORGOT PASSWORD ─────────────────────────────────────
         public async Task<AuthResponseDto> ForgotPasswordAsync(ForgotPasswordDto request)
         {
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Email == request.Email);
 
-            // Always return success to prevent email enumeration
             if (user == null)
                 return new AuthResponseDto { Success = true, Message = "If your email exists you will receive a reset link" };
 
-            // Invalidate any existing tokens for this user
             var existingTokens = await _context.PasswordResetTokens
                 .Where(t => t.UserId == user.Id && !t.IsUsed)
                 .ToListAsync();
 
             _context.PasswordResetTokens.RemoveRange(existingTokens);
 
-            // Generate new reset token
             var resetToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
 
             _context.PasswordResetTokens.Add(new PasswordResetToken
@@ -123,17 +116,15 @@ namespace Logic.Services
 
             await _context.SaveChangesAsync();
 
-            // TODO: Send email with reset token/link
-            // For now we return the token directly for testing
+            
             return new AuthResponseDto
             {
                 Success = true,
                 Message = "If your email exists you will receive a reset link",
-                Token = resetToken // Remove this in production
+                Token = resetToken
             };
         }
 
-        // ─── RESET PASSWORD ──────────────────────────────────────
         public async Task<AuthResponseDto> ResetPasswordAsync(ResetPasswordDto request)
         {
             if (request.NewPassword != request.ConfirmPassword)
@@ -152,7 +143,6 @@ namespace Logic.Services
             if (resetToken.ExpiresAt < DateTime.UtcNow)
                 return new AuthResponseDto { Success = false, Message = "Reset token has expired" };
 
-            // Update password
             resetToken.User!.PasswordHash = HashPassword(request.NewPassword);
             resetToken.IsUsed = true;
 
@@ -161,7 +151,6 @@ namespace Logic.Services
             return new AuthResponseDto { Success = true, Message = "Password reset successfully" };
         }
 
-        // ─── CHANGE PASSWORD ─────────────────────────────────────
         public async Task<AuthResponseDto> ChangePasswordAsync(int userId, ChangePasswordDto request)
         {
             if (request.NewPassword != request.ConfirmPassword)
@@ -181,7 +170,6 @@ namespace Logic.Services
             return new AuthResponseDto { Success = true, Message = "Password changed successfully" };
         }
 
-        // ─── HELPERS ─────────────────────────────────────────────
         private string HashPassword(string? password)
         {
             using var sha256 = SHA256.Create();

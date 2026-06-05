@@ -17,7 +17,6 @@ namespace PaymentUtility.Controllers
             _authService = authService;
         }
 
-        // ─── REGISTER ────────────────────────────────────────────
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto request)
         {
@@ -32,7 +31,6 @@ namespace PaymentUtility.Controllers
             return Ok(result);
         }
 
-        // ─── LOGIN ────────────────────────────────────────────────
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto request)
         {
@@ -47,7 +45,6 @@ namespace PaymentUtility.Controllers
             return Ok(result);
         }
 
-        // ─── LOGOUT ──────────────────────────────────────────────
         [HttpPost("logout")]
         [Authorize]
         public async Task<IActionResult> Logout()
@@ -65,7 +62,6 @@ namespace PaymentUtility.Controllers
             return Ok(result);
         }
 
-        // ─── FORGOT PASSWORD ─────────────────────────────────────
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto request)
         {
@@ -77,7 +73,6 @@ namespace PaymentUtility.Controllers
             return Ok(result);
         }
 
-        // ─── RESET PASSWORD ──────────────────────────────────────
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto request)
         {
@@ -92,7 +87,6 @@ namespace PaymentUtility.Controllers
             return Ok(result);
         }
 
-        // ─── CHANGE PASSWORD ─────────────────────────────────────
         [HttpPost("change-password")]
         [Authorize]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto request)

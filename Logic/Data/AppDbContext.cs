@@ -15,14 +15,12 @@ namespace Logic.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // User
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasIndex(u => u.Email).IsUnique();
             });
 
 
-            // TokenBlacklist
            
             modelBuilder.Entity<TokenBlacklist>(entity =>
             {
@@ -30,7 +28,6 @@ namespace Logic.Data
                 
             });
 
-            // PasswordResetToken
             modelBuilder.Entity<PasswordResetToken>(entity =>
             {
                 entity.HasOne(p => p.User)
