@@ -60,6 +60,7 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IAirtimeService, AirtimeService>();
 builder.Services.AddScoped<IDataService, DataService>();
 builder.Services.AddScoped<ICableTvService, CableTvService>();
+builder.Services.AddScoped<IElectricityService, ElectricityService>();
 
 var jwtKey = builder.Configuration["Jwt:Key"];
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
