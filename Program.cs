@@ -58,6 +58,7 @@ builder.Services.AddScoped<ITransactionPinService, TransactionPinService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IAirtimeService, AirtimeService>();
+builder.Services.AddScoped<IDataService, DataService>();
 
 var jwtKey = builder.Configuration["Jwt:Key"];
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

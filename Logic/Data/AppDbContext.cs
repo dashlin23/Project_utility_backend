@@ -13,6 +13,7 @@ namespace Logic.Data
         public DbSet<TransactionPin> TransactionPins { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<AirtimeTransaction> AirtimeTransactions { get; set; }
+        public DbSet<DataTransaction> DataTransactions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -64,6 +65,15 @@ namespace Logic.Data
                       .OnDelete(DeleteBehavior.Cascade);
 
                 entity.Property(a => a.Amount).HasColumnType("decimal(18,2)");
+            });
+            modelBuilder.Entity<DataTransaction>(entity =>
+            {
+                entity.HasOne(d => d.User)
+                      .WithMany()
+                      .HasForeignKey(d => d.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.Property(d => d.Amount).HasColumnType("decimal(18,2)");
             });
         }
     }
