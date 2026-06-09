@@ -11,6 +11,7 @@ namespace Logic.Data
         public DbSet<TokenBlacklist> TokenBlacklist { get; set; }
         public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
         public DbSet<TransactionPin> TransactionPins { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -46,6 +47,13 @@ namespace Logic.Data
                       .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasIndex(t => t.UserId).IsUnique();
+            });
+            modelBuilder.Entity<Notification>(entity =>
+            {
+                entity.HasOne(n => n.User)
+                      .WithMany()
+                      .HasForeignKey(n => n.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }
