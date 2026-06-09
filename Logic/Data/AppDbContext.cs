@@ -14,6 +14,7 @@ namespace Logic.Data
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<AirtimeTransaction> AirtimeTransactions { get; set; }
         public DbSet<DataTransaction> DataTransactions { get; set; }
+        public DbSet<CableTvTransaction> CableTvTransactions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -74,6 +75,15 @@ namespace Logic.Data
                       .OnDelete(DeleteBehavior.Cascade);
 
                 entity.Property(d => d.Amount).HasColumnType("decimal(18,2)");
+            });
+            modelBuilder.Entity<CableTvTransaction>(entity =>
+            {
+                entity.HasOne(c => c.User)
+                      .WithMany()
+                      .HasForeignKey(c => c.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.Property(c => c.Amount).HasColumnType("decimal(18,2)");
             });
         }
     }
