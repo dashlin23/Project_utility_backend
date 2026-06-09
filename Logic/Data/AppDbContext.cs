@@ -12,6 +12,7 @@ namespace Logic.Data
         public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
         public DbSet<TransactionPin> TransactionPins { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<AirtimeTransaction> AirtimeTransactions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -54,6 +55,15 @@ namespace Logic.Data
                       .WithMany()
                       .HasForeignKey(n => n.UserId)
                       .OnDelete(DeleteBehavior.Cascade);
+            });
+            modelBuilder.Entity<AirtimeTransaction>(entity =>
+            {
+                entity.HasOne(a => a.User)
+                      .WithMany()
+                      .HasForeignKey(a => a.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.Property(a => a.Amount).HasColumnType("decimal(18,2)");
             });
         }
     }
