@@ -15,6 +15,7 @@ namespace Logic.Data
         public DbSet<AirtimeTransaction> AirtimeTransactions { get; set; }
         public DbSet<DataTransaction> DataTransactions { get; set; }
         public DbSet<CableTvTransaction> CableTvTransactions { get; set; }
+
         public DbSet<ElectricityTransaction> ElectricityTransactions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
