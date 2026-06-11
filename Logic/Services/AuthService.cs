@@ -66,6 +66,16 @@ namespace Logic.Services
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
+            var wallet = new Wallet
+            {
+                UserId = user.Id,
+                Balance = 0.00m,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+            _context.Wallets.Add(wallet);
+            await _context.SaveChangesAsync();
+
             return new AuthResponseDto { Success = true, Message = "Account created successfully" };
         }
 
