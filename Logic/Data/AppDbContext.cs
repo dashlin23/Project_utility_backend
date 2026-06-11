@@ -12,6 +12,12 @@ namespace Logic.Data
         public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
         public DbSet<Wallet> Wallets { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<TransactionPin> TransactionPins { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<AirtimeTransaction> AirtimeTransactions { get; set; }
+        public DbSet<DataTransaction> DataTransactions { get; set; }
+        public DbSet<CableTvTransaction> CableTvTransactions { get; set; }
+        public DbSet<ElectricityTransaction> ElectricityTransactions { get; set; }
 
 
 
@@ -73,6 +79,58 @@ namespace Logic.Data
                 .Property(t => t.Status)
                 .HasConversion<string>();
 
+            modelBuilder.Entity<TransactionPin>(entity =>
+            {
+                entity.HasOne(t => t.User)
+                      .WithMany()
+                      .HasForeignKey(t => t.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(t => t.UserId).IsUnique();
+            });
+            modelBuilder.Entity<Notification>(entity =>
+            {
+                entity.HasOne(n => n.User)
+                      .WithMany()
+                      .HasForeignKey(n => n.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+            modelBuilder.Entity<AirtimeTransaction>(entity =>
+            {
+                entity.HasOne(a => a.User)
+                      .WithMany()
+                      .HasForeignKey(a => a.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.Property(a => a.Amount).HasColumnType("decimal(18,2)");
+            });
+            modelBuilder.Entity<DataTransaction>(entity =>
+            {
+                entity.HasOne(d => d.User)
+                      .WithMany()
+                      .HasForeignKey(d => d.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.Property(d => d.Amount).HasColumnType("decimal(18,2)");
+            });
+            modelBuilder.Entity<CableTvTransaction>(entity =>
+            {
+                entity.HasOne(c => c.User)
+                      .WithMany()
+                      .HasForeignKey(c => c.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.Property(c => c.Amount).HasColumnType("decimal(18,2)");
+            });
+            modelBuilder.Entity<ElectricityTransaction>(entity =>
+            {
+                entity.HasOne(e => e.User)
+                      .WithMany()
+                      .HasForeignKey(e => e.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.Property(e => e.Amount).HasColumnType("decimal(18,2)");
+            });
         }
     }
 }
